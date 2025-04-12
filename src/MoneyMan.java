@@ -7,15 +7,13 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
-class Account {
+class BankAccount {
     String name;
-    double startBalance;
     double balance;
     List<Object> transactions = new ArrayList<>();
 
-    public Account(String name, double startBalance) {
+    public BankAccount(String name, double startBalance) {
         this.name = name;
-        this.startBalance = startBalance;
         this.balance = startBalance;
     }
 }
@@ -97,6 +95,14 @@ class FileOp {
 
 public class MoneyMan {
     public static void main(String[] args) {
-
+        List<Object> accounts = new ArrayList<>();
+        while (true) {
+            String cmd = Input.InputStr("Command? ", 10);
+            if (cmd.equalsIgnoreCase("quit")) break;
+            if (cmd.equalsIgnoreCase("new"))
+                accounts.add(new BankAccount(Input.InputStr("Command? ", 10), 0.0));
+        }
+        for (int i = 0; i < accounts.size(); ++i)
+            System.out.println(accounts[i].name);
     }
 }
