@@ -95,14 +95,19 @@ class FileOp {
 
 public class MoneyMan {
     public static void main(String[] args) {
-        List<Object> accounts = new ArrayList<>();
+        List<BankAccount> accounts = new ArrayList<>();
+        String inp;
         while (true) {
             String cmd = Input.InputStr("Command? ", 10);
             if (cmd.equalsIgnoreCase("quit")) break;
-            if (cmd.equalsIgnoreCase("new"))
-                accounts.add(new BankAccount(Input.InputStr("Command? ", 10), 0.0));
+            if (cmd.equalsIgnoreCase("new")) {
+                inp = Input.InputStr("Account name? ", 10);
+                BankAccount b = new BankAccount(inp, 10.0);
+                accounts.add(b);
+            }
         }
-        for (int i = 0; i < accounts.size(); ++i)
-            System.out.println(accounts[i].name);
+        for (int i = 0; i < accounts.size(); ++i) {
+            System.out.println("Name: " + accounts.get(i).name + " Balance: " + accounts.get(i).balance);
+        }
     }
 }
