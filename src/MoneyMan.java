@@ -7,17 +7,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
-class BankAccount {
-    String name;
-    double balance;
-    List<Object> transactions = new ArrayList<>();
-
-    public BankAccount(String name, double startBalance) {
-        this.name = name;
-        this.balance = startBalance;
-    }
-}
-
 class Input {
     public static String InputStr(String prompt, int len) {
         System.out.print(prompt);
@@ -91,23 +80,59 @@ class FileOp {
 }
 
 
+class BankAccount {
+    String name;
+    double balance;
+    List<Object> transactions = new ArrayList<>();
 
+    public BankAccount(String name, double startBalance) {
+        this.name = name;
+        this.balance = startBalance;
+    }
+
+    public static void ShowAccounts(List<BankAccount> accounts) {
+//        if (accounts.isEmpty()) {
+//            System.out.println("No accounts. Enter 'New' to add one.");
+//            return; }
+//        System.out.println("Bank accounts:");
+//        for (int i = 0; i < accounts.size(); ++i)
+//            System.out.println(i + " Name: " + accounts.get(i).name + " Balance: " + accounts.get(i).balance);
+        System.out.println("Bank accounts:");
+        for (int i = 0; i < accounts.size(); ++i)
+            System.out.println(i + " Name: " + accounts.get(i).name + " Balance: " + accounts.get(i).balance);
+        System.out.println(accounts.size() + " Create a new account.");
+    }
+
+    void ShowTransactions() {
+        if (transactions.isEmpty()) {
+            System.out.println("No accounts. Enter 'New' to add one.");
+            return;
+        }
+        System.out.println("Transactions for account: " + name);
+        for (int i = 0; i < transactions.size(); ++i) {
+            System.out.println();
+        }
+    }
+}
 
 public class MoneyMan {
     public static void main(String[] args) {
         List<BankAccount> accounts = new ArrayList<>();
-        String inp;
+        String cmd;
+        int currentAccount = 999;   // currently selected account
         while (true) {
-            String cmd = Input.InputStr("Command? ", 10);
-            if (cmd.equalsIgnoreCase("quit")) break;
-            if (cmd.equalsIgnoreCase("new")) {
-                inp = Input.InputStr("Account name? ", 10);
-                BankAccount b = new BankAccount(inp, 10.0);
-                accounts.add(b);
+            BankAccount.ShowAccounts(accounts);
+            cmd = Input.InputStr("Select an account: ", 5);
+            if (cmd.equalsIgnoreCase("Q")) break;
+            if (cmd.equals(Integer.toString(accounts.size()))) {
+                cmd = Input.InputStr("Create account: Name? ", 10);
+                double openingBalance = Input.InputDouble("Opening balance? ");
+                accounts.add(new BankAccount(cmd, openingBalance));
             }
-        }
-        for (int i = 0; i < accounts.size(); ++i) {
-            System.out.println("Name: " + accounts.get(i).name + " Balance: " + accounts.get(i).balance);
+            while (true) {
+                cmd = Input.InputStr("Command? ", 10);
+                if (cmd.equalsIgnoreCase("quit")) break;
+            }
         }
     }
 }
