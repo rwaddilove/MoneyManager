@@ -100,6 +100,10 @@ class BankAccount {
             System.out.println();
         }
     }
+
+    public void AddTransaction() {
+        System.out.println("ADD TRANSACTION");
+    }
 }
 
 
@@ -130,7 +134,12 @@ public class MoneyMan {
             if (cmd.equals("add")) General.AddAccount(accounts);
             if (Input.isInteger(cmd)) currentAccount = Integer.parseInt(cmd);
             while (currentAccount < accounts.size()) {
-                BankAccount.ShowTransactions(currentAccount);
+                accounts.get(currentAccount).ShowTransactions();
+                cmd = Input.InputStr("\nAdd or Close: ", 5).toLowerCase();
+                if (cmd.equals("add")) accounts.get(currentAccount).AddTransaction();
+                if (cmd.equals("close")) {      // exit while
+                    cmd = "";
+                    currentAccount = 999; }
             }
         }
 
