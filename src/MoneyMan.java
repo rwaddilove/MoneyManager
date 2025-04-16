@@ -90,7 +90,7 @@ class BankAccount {
         this.balance = startBalance;
     }
 
-    void ShowTransactions() {
+    public void ShowTransactions() {
         if (transactions.isEmpty()) {
             System.out.println("No accounts. Enter 'New' to add one.");
             return;
@@ -129,6 +129,9 @@ public class MoneyMan {
             cmd = Input.InputStr("\nEnter account number, Add or Quit: ", 5).toLowerCase();
             if (cmd.equals("add")) General.AddAccount(accounts);
             if (Input.isInteger(cmd)) currentAccount = Integer.parseInt(cmd);
+            while (currentAccount < accounts.size()) {
+                BankAccount.ShowTransactions(currentAccount);
+            }
         }
 
     }
