@@ -90,19 +90,6 @@ class BankAccount {
         this.balance = startBalance;
     }
 
-    public static void ShowAccounts(List<BankAccount> accounts) {
-//        if (accounts.isEmpty()) {
-//            System.out.println("No accounts. Enter 'New' to add one.");
-//            return; }
-//        System.out.println("Bank accounts:");
-//        for (int i = 0; i < accounts.size(); ++i)
-//            System.out.println(i + " Name: " + accounts.get(i).name + " Balance: " + accounts.get(i).balance);
-        System.out.println("Bank accounts:");
-        for (int i = 0; i < accounts.size(); ++i)
-            System.out.println(i + " Name: " + accounts.get(i).name + " Balance: " + accounts.get(i).balance);
-        System.out.println(accounts.size() + " Create a new account.");
-    }
-
     void ShowTransactions() {
         if (transactions.isEmpty()) {
             System.out.println("No accounts. Enter 'New' to add one.");
@@ -115,24 +102,34 @@ class BankAccount {
     }
 }
 
+
+class General {     // general functions not specific to any account
+
+    public static void AddAccount(List<BankAccount> accounts) {
+        String name = Input.InputStr("ADD NEW ACCOUNT:\nEnter name: ", 10);
+        double openingBalance = Input.InputDouble("Enter opening balance: ");
+        accounts.add(new BankAccount(name, openingBalance));
+    }
+
+    public static void ShowAccounts(List<BankAccount> accounts) {
+        System.out.println("BANK ACCOUNTS:");
+        for (int i = 0; i < accounts.size(); ++i)
+            System.out.println(i + " Name: " + accounts.get(i).name + " Balance: " + accounts.get(i).balance);
+    }
+}
+
 public class MoneyMan {
     public static void main(String[] args) {
         List<BankAccount> accounts = new ArrayList<>();
-        String cmd;
+
+        String cmd = "";
         int currentAccount = 999;   // currently selected account
-        while (true) {
-            BankAccount.ShowAccounts(accounts);
-            cmd = Input.InputStr("Select an account: ", 5);
-            if (cmd.equalsIgnoreCase("Q")) break;
-            if (cmd.equals(Integer.toString(accounts.size()))) {
-                cmd = Input.InputStr("Create account: Name? ", 10);
-                double openingBalance = Input.InputDouble("Opening balance? ");
-                accounts.add(new BankAccount(cmd, openingBalance));
-            }
-            while (true) {
-                cmd = Input.InputStr("Command? ", 10);
-                if (cmd.equalsIgnoreCase("quit")) break;
-            }
+        General.ShowAccounts(accounts);
+        while (!cmd.equalsIgnoreCase("quit")) {
+            cmd = Input.InputStr("\nEnter account number, Add or Quit: ", 5).toLowerCase();
+            if (cmd.equals("add")) General.AddAccount(accounts);
+            if (Input.isInteger(cmd)) currentAccount = Integer.parseInt(cmd);
         }
+
     }
 }
