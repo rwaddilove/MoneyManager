@@ -60,7 +60,6 @@ class FileOp {
                 tasks.add(new ArrayList<>());
                 for (String value : values)
                     tasks.getLast().add(value);
-                if (tasks.getLast().size() < 6) tasks.getLast().add("");  // "" not added
             }
         }
         catch (FileNotFoundException e) { System.out.println("'" + fp + "' not found."); }
@@ -83,26 +82,31 @@ class FileOp {
 class BankAccount {
     String name;
     double balance;
-    List<Object> transactions = new ArrayList<>();
+    ArrayList<String> transactions = new ArrayList<>();
 
     public BankAccount(String name, double startBalance) {
         this.name = name;
-        this.balance = startBalance;
-    }
+        this.balance = startBalance; }
 
     public void ShowTransactions() {
         if (transactions.isEmpty()) {
             System.out.println("No accounts. Enter 'New' to add one.");
-            return;
-        }
+            return; }
         System.out.println("Transactions for account: " + name);
         for (int i = 0; i < transactions.size(); ++i) {
-            System.out.println();
-        }
+            System.out.println(); }
     }
 
     public void AddTransaction() {
+        // payee, category, amount, notes, date - make date last so last item always filled
         System.out.println("ADD TRANSACTION");
+        String payee = Input.InputStr("Payee: ", 20);
+        String category = Input.InputStr("Category: ", 20);
+        String amount = Input.InputStr("Amount: ", 20);
+        String notes = Input.InputStr("notes: ", 20);
+        String date = Input.InputStr("Date: ", 20);
+        transactions.add(new ArrayList<>());
+        transactions.getLast();
     }
 }
 
@@ -115,7 +119,7 @@ class General {     // general functions not specific to any account
         accounts.add(new BankAccount(name, openingBalance));
     }
 
-    public static void ShowAccounts(List<BankAccount> accounts) {
+    public static void ListAccounts(List<BankAccount> accounts) {
         System.out.println("BANK ACCOUNTS:");
         for (int i = 0; i < accounts.size(); ++i)
             System.out.println(i + " Name: " + accounts.get(i).name + " Balance: " + accounts.get(i).balance);
@@ -125,21 +129,20 @@ class General {     // general functions not specific to any account
 public class MoneyMan {
     public static void main(String[] args) {
         List<BankAccount> accounts = new ArrayList<>();
-
+        int currentAccount = 9999;   // any invalid number
         String cmd = "";
-        int currentAccount = 999;   // currently selected account
-        General.ShowAccounts(accounts);
-        while (!cmd.equalsIgnoreCase("quit")) {
-            cmd = Input.InputStr("\nEnter account number, Add or Quit: ", 5).toLowerCase();
+        General.ListAccounts(accounts);
+
+        while (!cmd.equals("quit")) {
+            cmd = Input.InputStr("\nEnter account num, Add or Quit: ", 5).toLowerCase();
             if (cmd.equals("add")) General.AddAccount(accounts);
-            if (Input.isInteger(cmd)) currentAccount = Integer.parseInt(cmd);
-            while (currentAccount < accounts.size()) {
+            if (Input.isInteger(cmd)) currentAccount = Integer.parseInt(cmd);   // select an account
+
+            while (currentAccount < accounts.size()) {      // while an account is selected
                 accounts.get(currentAccount).ShowTransactions();
                 cmd = Input.InputStr("\nAdd or Close: ", 5).toLowerCase();
                 if (cmd.equals("add")) accounts.get(currentAccount).AddTransaction();
-                if (cmd.equals("close")) {      // exit while
-                    cmd = "";
-                    currentAccount = 999; }
+                if (cmd.equals("close")) currentAccount = 9999;
             }
         }
 
