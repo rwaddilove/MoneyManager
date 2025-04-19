@@ -18,7 +18,7 @@ class Input {
         try {
             return Double.parseDouble(InputStr(prompt, 10)); }
         catch (NumberFormatException e) {
-            return 0.0; } }     // a value not used
+            return 0.0; } }
 
     public static int InputInt(String prompt) {
         try {
@@ -82,7 +82,7 @@ class FileOp {
 class BankAccount {
     String name;
     double balance;
-    ArrayList<String> transactions = new ArrayList<>();
+    ArrayList<ArrayList<String>> transactions = new ArrayList<>();
 
     public BankAccount(String name, double startBalance) {
         this.name = name;
@@ -90,23 +90,31 @@ class BankAccount {
 
     public void ShowTransactions() {
         if (transactions.isEmpty()) {
-            System.out.println("No accounts. Enter 'New' to add one.");
+            System.out.println("No transactions.");
             return; }
         System.out.println("Transactions for account: " + name);
-        for (int i = 0; i < transactions.size(); ++i) {
-            System.out.println(); }
+        int i = 0;
+        for (ArrayList<String> item : transactions) {
+            System.out.printf("%2d %-18s %-10s %10s %-10s %-3s\n", i++, item.get(0), item.get(1), item.get(2), item.get(3), item.get(4));
+        }
     }
 
     public void AddTransaction() {
-        // payee, category, amount, notes, date - make date last so last item always filled
+        // payee, date, amount, category, notes, unused
         System.out.println("ADD TRANSACTION");
         String payee = Input.InputStr("Payee: ", 20);
-        String category = Input.InputStr("Category: ", 20);
-        String amount = Input.InputStr("Amount: ", 20);
-        String notes = Input.InputStr("notes: ", 20);
         String date = Input.InputStr("Date: ", 20);
+        Double amount = Input.InputDouble("Amount: ");
+        String category = Input.InputStr("Category: ", 20);
+        String notes = Input.InputStr("notes: ", 20);
         transactions.add(new ArrayList<>());
-        transactions.getLast();
+        Collections.addAll(transactions.getLast(), Double.toString(amount), date, category, notes, "*");
+//        transactions.getLast().add(payee);
+//        transactions.getLast().add(Double.toString(amount));
+//        transactions.getLast().add(date);
+//        transactions.getLast().add(category);
+//        transactions.getLast().add(notes);
+//        transactions.getLast().add("*");
     }
 }
 
@@ -131,9 +139,9 @@ public class MoneyMan {
         List<BankAccount> accounts = new ArrayList<>();
         int currentAccount = 9999;   // any invalid number
         String cmd = "";
-        General.ListAccounts(accounts);
 
         while (!cmd.equals("quit")) {
+            General.ListAccounts(accounts);
             cmd = Input.InputStr("\nEnter account num, Add or Quit: ", 5).toLowerCase();
             if (cmd.equals("add")) General.AddAccount(accounts);
             if (Input.isInteger(cmd)) currentAccount = Integer.parseInt(cmd);   // select an account
