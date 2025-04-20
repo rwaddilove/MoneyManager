@@ -18,7 +18,7 @@ class Input {
         try {
             return Double.parseDouble(InputStr(prompt, 10)); }
         catch (NumberFormatException e) {
-            return 0.0; } }
+            return 0.0; } }     // a value not used
 
     public static int InputInt(String prompt) {
         try {
@@ -39,42 +39,55 @@ class Input {
         String inp = InputStr(prompt,15);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MM-dd");
         try {
-            LocalDate date = LocalDate.parse(inp, formatter);}
+            LocalDate date = LocalDate.parse(inp, formatter); }
         catch (DateTimeParseException dtpe) {
             System.out.println("Date not set (not recognised).");
             inp = ""; }
-        return inp;
-    }
+        return inp; }
 }
 
 
 class FileOp {
 
-    public static void Read(String fp, ArrayList<ArrayList<String>> tasks) {
-        tasks.clear();
-        try (Scanner readFile = new Scanner(new File(fp))) {
-            while (readFile.hasNextLine()) {
-                String line = readFile.nextLine();
-                line = line.substring(1, line.length()-1);        // strip first and last "
-                String[] values = line.split("\",\"");      // split into task fields
-                tasks.add(new ArrayList<>());
-                for (String value : values)
-                    tasks.getLast().add(value);
+    public static void Read(String filePath, List<BankAccount> accounts) {
+        // create bank accounts, add filenames to accountFiles
+        int n = 0;
+        while (true) {
+            String fname = filePath + "MoneyManager" + n++ + ".txt";        // get a filename (MoneyManager0/1/2..)
+            try (Scanner readFile = new Scanner(new File(fname))) {
+                accounts.add(new BankAccount(readFile.nextLine(), 0.0));  // add new bank account
+                accounts.getLast().name = readFile.nextLine();                       // set name
+                while (readFile.hasNextLine()) {
+                    String line = readFile.nextLine();                      // read a transaction
+                    line = line.substring(1, line.length() - 1);            // strip first and last "
+                    String[] values = line.split("\",\"");            // values[] = transaction items
+                    accounts.getLast().transactions.add(new ArrayList<>()); // add a new transaction
+                    Collections.addAll(accounts.getLast().transactions.getLast(), values);  // add items
+//                    for (String value : values)
+//                        accounts.getLast().transactions.getLast().add(value);
+                }
             }
+            catch (FileNotFoundException e) {
+                System.out.println("Error reading file.");
+                return; }
         }
-        catch (FileNotFoundException e) { System.out.println("'" + fp + "' not found."); }
     }
 
-    public static void Write(String fp, ArrayList<ArrayList<String>> tasks) {
-        try (FileWriter writeFile = new FileWriter(fp)) {
-            for (ArrayList<String> tsk : tasks ) {
-                String line = "\"";
-                for (String s : tsk)
-                    line += s + "\",\"";
-                writeFile.write(line.substring(0, (line.length()-2)) + "\n");
-            }
+    public static void Write(String filePath, List<BankAccount> accounts) {
+        int n = 0;
+        for (BankAccount account : accounts) {                              // for each bank account
+            String fname = filePath + "MoneyManager" + n++ + ".txt";        // get a filename (MoneyManager0/1/2..)
+            try (FileWriter writeFile = new FileWriter(fname)) {
+                writeFile.write(account.name);                              // save account name
+                for (ArrayList<String> transaction : account.transactions) {       // for each transaction
+                    String line = "\n\"";           // start with a "
+                    for (String item : transaction)
+                        line += item + "\",\"";     // add each item & end with ","
+                    writeFile.write(line.substring(0, (line.length() - 2)));    // chop final ,"
+                }
+            } catch (IOException e) {
+                System.out.println("Could not save " + fname); }
         }
-        catch (IOException e) { System.out.println("Could not save " + fp); }
     }
 }
 
@@ -104,11 +117,11 @@ class BankAccount {
         System.out.println("ADD TRANSACTION");
         String payee = Input.InputStr("Payee: ", 20);
         String date = Input.InputStr("Date: ", 20);
-        Double amount = Input.InputDouble("Amount: ");
+        String amount = String.format("%.2f", Input.InputDouble("Amount: "));
         String category = Input.InputStr("Category: ", 20);
         String notes = Input.InputStr("notes: ", 20);
         transactions.add(new ArrayList<>());
-        Collections.addAll(transactions.getLast(), Double.toString(amount), date, category, notes, "*");
+        Collections.addAll(transactions.getLast(), payee, date, amount, category, notes, "unused");
 //        transactions.getLast().add(payee);
 //        transactions.getLast().add(Double.toString(amount));
 //        transactions.getLast().add(date);
@@ -137,6 +150,10 @@ class General {     // general functions not specific to any account
 public class MoneyMan {
     public static void main(String[] args) {
         List<BankAccount> accounts = new ArrayList<>();
+        File mac = new File("/users/shared");
+        String filepath = mac.exists() ? "/users/shared/" : "/users/public/";
+        FileOp.Read(filepath, accounts);
+
         int currentAccount = 9999;   // any invalid number
         String cmd = "";
 
@@ -153,6 +170,6 @@ public class MoneyMan {
                 if (cmd.equals("close")) currentAccount = 9999;
             }
         }
-
+        FileOp.Write(filepath, accounts);
     }
 }
