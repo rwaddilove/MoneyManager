@@ -9,4 +9,4 @@ Money Manager is a text-based command line money manager by as a learning exerci
 * At date prompts, hit Enter for today's date. (bad dates also enter today.
 * Enter nothing for name or amount to abort (eg. when entering a transaction)
 * Enter a number to select an account or transaction (eg, 0, 1, 2...)
-* Most important: An *expense or bill is minus*, eg. -7.50
+* An expense (payment, bill, credit card etc.) is **minus**, eg. -7.50
